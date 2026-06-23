@@ -1,4 +1,6 @@
 window.setupCameraControl = function(camera, controls, earthObject, domElement) {
+    window.camera = camera;
+
     const moveSpeed = 0.1;
     const lookSpeed = 0.02;
     const keysPressed = {};
@@ -42,10 +44,12 @@ window.setupCameraControl = function(camera, controls, earthObject, domElement) 
     });
 
     window.updateCameraMovement = function() {
-        if (keysPressed['arrowup']) camera.rotateX(lookSpeed);
-        if (keysPressed['arrowdown']) camera.rotateX(-lookSpeed);
-        if (keysPressed['arrowleft']) camera.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), lookSpeed);
-        if (keysPressed['arrowright']) camera.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), -lookSpeed);
+        let cameraRotated = false;
+
+        if (keysPressed['arrowup']) { camera.rotateX(lookSpeed); cameraRotated = true; }
+        if (keysPressed['arrowdown']) { camera.rotateX(-lookSpeed); cameraRotated = true; }
+        if (keysPressed['arrowleft']) { camera.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), lookSpeed); cameraRotated = true; }
+        if (keysPressed['arrowright']) { camera.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), -lookSpeed); cameraRotated = true; }
 
         const forward = new THREE.Vector3();
         camera.getWorldDirection(forward);
@@ -53,6 +57,7 @@ window.setupCameraControl = function(camera, controls, earthObject, domElement) 
 
         const right = new THREE.Vector3();
         right.crossVectors(forward, camera.up).normalize();
+        
         const up = camera.up.clone().normalize();
 
         const moveDirection = new THREE.Vector3(0, 0, 0);
@@ -60,18 +65,21 @@ window.setupCameraControl = function(camera, controls, earthObject, domElement) 
         if (keysPressed['s']) moveDirection.add(forward.clone().negate());
         if (keysPressed['a']) moveDirection.add(right.clone().negate());
         if (keysPressed['d']) moveDirection.add(right);
+        
         if (keysPressed['e']) moveDirection.add(up);
         if (keysPressed['q']) moveDirection.add(up.clone().negate());
 
         if (moveDirection.lengthSq() > 0) {
-            moveDirection.normalize().multiplyScalar(moveSpeed);
+            const currentMultiplier = keysPressed['shift'] ? 5 : 1;
+            moveDirection.normalize().multiplyScalar(moveSpeed * currentMultiplier);
             camera.position.add(moveDirection);
-            
-            if (keysPressed['w'] || keysPressed['s'] || keysPressed['a'] || keysPressed['d']) {
-                const targetDirection = new THREE.Vector3();
-                camera.getWorldDirection(targetDirection);
-                controls.target.copy(camera.position).add(targetDirection.multiplyScalar(0.1));
-            }
+        }
+
+        if (moveDirection.lengthSq() > 0 || cameraRotated) {
+            const targetDirection = new THREE.Vector3();
+            camera.getWorldDirection(targetDirection);
+            controls.target.copy(camera.position).add(targetDirection.multiplyScalar(1.0));
+            controls.update();
         }
     };
 };

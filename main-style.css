@@ -14,3 +14,60 @@ body {
     width: 100vw;
     height: 100vh;
 }
+
+#ui-panel {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(10, 10, 25, 0.85);
+    color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #3a3a5c;
+    font-family: sans-serif;
+    width: 240px;
+    z-index: 100; 
+    pointer-events: auto; 
+}
+
+#ui-panel h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    color: #00ffcc;
+}
+
+.control-group {
+    margin: 10px 0;
+}
+
+.control-group label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.coodinates-display {
+    display: flex;
+    margin-top: 10px;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+    gap: 10px;
+    
+    /*background-color: rgba(255, 255, 255, 0.15); */
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+    padding: 10px 10px;
+    
+    color: #ffffff;
+    font-family: monospace;
+    font-size: 14px;
+    white-space: nowrap; 
+
+}
+.coodinates-display .display{
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 4px;
+}

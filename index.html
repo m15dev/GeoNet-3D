@@ -8,12 +8,46 @@
 </head>
 <body>
     
-    <div id="canvas-container"></div>
+    <div id="canvas-container"></div><!--Here live the project ;o-->>
+
+
+    <div id="ui-panel">
+        <h3>System Controls</h3>
+        <hr>
+        <div class="control-group">
+            <label>
+                <input type="checkbox" id="toggle-rotation" checked>
+                Toggle Rotation
+            </label>
+
+            <label>
+                <input type="checkbox" id="toggle-stars" checked>
+                Toggle Stars
+            </label>
+
+            <label>
+                <input type="checkbox" id="toggle-lock">
+                Lock Camera
+            </label>
+
+            <label>
+                <input type="checkbox" id="toggle-compass" checked> Toggle 3D Compas
+            </label>
+            
+            <div class="coodinates-display">
+                <span class="display" id="cord-x">X:0.00</span>
+                <span class="display" id="cord-y">Y:0.00</span>
+                <span class="display" id="cord-z">Z:0.00</span>
+            </div>
+        </div>
+        
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="camera-control.js"></script>
     <script src="app.js"></script>
+    <script src="position-tool.js"></script>
 </body>
 </html>
 
