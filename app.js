@@ -5,7 +5,26 @@ window.camera = camera;
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 
-const compassSize = 80; //
+// --- GLOBAL VARIABLES ---
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+let targetPosition = new THREE.Vector3();
+let targetLookAt = new THREE.Vector3();
+let isTransitioning = false;
+const transitionSpeed = 0.08; 
+
+// Variables to handle continuous tracking and smooth camera manipulation
+let followedObject = null; 
+const cameraOffset = new THREE.Vector3(); 
+
+// Base zoom distance offsets for core celestial bodies
+const zoomDistances = {
+    "lua": 4.0,   // Close up for the small moon
+    "terra": 9.0, // Medium distance to fit earth
+    "sol": 35.0   // Further to fit sun size
+};
+
+const compassSize = 80; 
 const compassScene = new THREE.Scene();
 compassScene.background = null; 
 const compassCamera = new THREE.PerspectiveCamera(50, 1, 0.1, 10);
@@ -38,8 +57,8 @@ window.setupCameraControl(camera, controls, earth, renderer.domElement);
 const sunGeometry = new THREE.SphereGeometry(12, 32, 32);
 const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffaa00 }); 
 const sun = new THREE.Mesh(sunGeometry, sunMaterial);
-
 sun.position.set(80, 20, -60); 
+sun.name = "sol";
 scene.add(sun);
 
 const moonTexture = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/moon_1024.jpg');
@@ -51,10 +70,26 @@ const moonMaterial = new THREE.MeshStandardMaterial({
 });
 const moon = new THREE.Mesh(moonGeometry, moonMaterial);
 moon.castShadow = true; 
-moon.receiveShadow = true;  
+moon.name = "lua";
+moon.receiveShadow = true;   
 scene.add(moon);
 
 let moonOrbitAngle = 0;
+
+// Initialize the external module satellites
+if (typeof window.createSatellite === 'function') {
+
+    window.createSatellite(scene, "satelite_iss", 0x00ffaa, 4.2, 0.02, 0.4, 0.5, 0.15, 0.3);      
+
+    window.createSatellite(scene, "satelite_hubble", 0x33aaff, 4.8, 0.015, -0.2, 0.15, 0.15, 0.35);
+
+    window.createSatellite(scene, "satelite_pace", 0xffcc00, 5.3, 0.018, 0.9, 0.18, 0.18, 0.18);
+
+    window.createSatellite(scene, "satelite_lageos", 0xff55aa, 7.5, 0.008, 0.7, 0.12, 0.12, 0.12);
+
+    window.createSatellite(scene, "telescopio_jwst", 0xff6600, 25.0, 0.002, 0.0, 0.4, 0.2, 0.4);
+
+}
 
 const starsGeometry = new THREE.BufferGeometry();
 const starsCount = 3500; 
@@ -126,32 +161,76 @@ document.getElementById('toggle-compass').addEventListener('change', (e) => {
     showCompass = e.target.checked;
 });
 
+window.addEventListener('keydown', () => {
+    if (followedObject) {
+        followedObject = null;
+    }
+});
+
 function animate() {
     requestAnimationFrame(animate);
+
+    // 1. Update orbital positions first so the camera tracking targets are accurate for this frame
+    moonOrbitAngle += 0.005; 
+    const orbitRadius = 12; 
+    moon.position.x = Math.sin(moonOrbitAngle) * orbitRadius;
+    moon.position.z = Math.cos(moonOrbitAngle) * orbitRadius;
+    moon.position.y = Math.sin(moonOrbitAngle * 0.5) * 2; 
+    moon.rotation.y += 0.002;
+
+    // Updates external file satellite trajectories
+    if (window.updateSatellites) {
+        window.updateSatellites();
+    }
+
+    // Dynamically update transition vectors if traveling to a moving target
+    if (isTransitioning && followedObject) {
+        targetLookAt.copy(followedObject.position);
+        
+        const objectName = followedObject.name;
+        // Combines zoom targets dynamically inside the loop
+        const activeZooms = { ...zoomDistances, ...(window.satelliteZoomDistances || {}) };
+        const distanciaDesejada = activeZooms[objectName] !== undefined ? activeZooms[objectName] : (followedObject.geometry?.parameters?.radius * 2.5 || 5.0);
+        
+        const direcao = new THREE.Vector3();
+        direcao.subVectors(camera.position, followedObject.position).normalize();
+        targetPosition.copy(followedObject.position).addScaledVector(direcao, distanciaDesejada);
+    }
+
+    // 2. Perform smooth flight transition (LERP)
+    if (isTransitioning) {
+        camera.position.lerp(targetPosition, transitionSpeed);
+        controls.target.lerp(targetLookAt, transitionSpeed);
+
+        if (camera.position.distanceTo(targetPosition) < 0.2) {
+            isTransitioning = false;
+            if (followedObject) {
+                cameraOffset.subVectors(camera.position, controls.target);
+            }
+        }
+    }
+
+    // 3. CONTINUOUS TRACKING LOOP (Maintains user mouse control while tracking moving targets)
+    if (followedObject && !isTransitioning) {
+        cameraOffset.subVectors(camera.position, controls.target);
+        controls.target.copy(followedObject.position);
+        camera.position.copy(followedObject.position).add(cameraOffset);
+    }
 
     if (rotateEarth) {
         earth.rotation.y += 0.002;
     }
 
-    moonOrbitAngle += 0.005; 
-
-    const orbitRadius = 12; 
-
-    moon.position.x = Math.sin(moonOrbitAngle) * orbitRadius;
-    moon.position.z = Math.cos(moonOrbitAngle) * orbitRadius;
-    moon.position.y = Math.sin(moonOrbitAngle * 0.5) * 2; 
-
-    moon.rotation.y += 0.002;
-
-    if (lockCamera && rotateEarth) {
-        camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.002);
-        controls.update();
-    } else {
-        window.updateCameraMovement();
+    if (!followedObject) {
+        if (lockCamera && rotateEarth) {
+            camera.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.002);
+            controls.update();
+        } else {
+            window.updateCameraMovement();
+        }
     }
 
     controls.update();
-    
     renderer.render(scene, camera); 
 
     if (showCompass) {
@@ -192,6 +271,45 @@ window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// --- FIXED RAYCASTER INTERACTION LISTENER ---
+window.addEventListener('click', (event) => {
+    if (event.target.tagName === 'INPUT' || event.target.closest('#system-controls') || event.target.tagName === 'BUTTON') {
+        return;
+    }
+
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+
+    // Pull the meshes array safely from the satellites file scope
+    const satelliteMeshes = typeof window.getSatelliteMeshes === 'function' ? window.getSatelliteMeshes() : [];
+    const alvos = [earth, moon, sun, ...satelliteMeshes];
+    
+    alvos.forEach(obj => obj.updateMatrixWorld());
+
+    const intersects = raycaster.intersectObjects(alvos);
+
+    if (intersects.length > 0) {
+        const objetClicked = intersects[0].object;
+        
+        followedObject = objetClicked;
+        targetLookAt.copy(objetClicked.position);
+
+        const objectName = objetClicked.name;
+        // Merging configurations dynamically here to capture asynchronously loaded data safely
+        const activeZooms = { ...zoomDistances, ...(window.satelliteZoomDistances || {}) };
+        const distanciaDesejada = activeZooms[objectName] !== undefined ? activeZooms[objectName] : (objetClicked.geometry?.parameters?.radius * 2.5 || 5.0);
+
+        const direcao = new THREE.Vector3();
+        direcao.subVectors(camera.position, objetClicked.position).normalize();
+
+        targetPosition.copy(objetClicked.position).addScaledVector(direcao, distanciaDesejada);
+
+        isTransitioning = true;
+    }
 });
 
 animate();
