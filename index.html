@@ -16,11 +16,6 @@
         <hr>
         <div class="control-group">
             <label>
-                <input type="checkbox" id="toggle-rotation" checked>
-                Toggle Rotation
-            </label>
-
-            <label>
                 <input type="checkbox" id="toggle-stars" checked>
                 Toggle Stars
             </label>
@@ -33,7 +28,21 @@
             <label>
                 <input type="checkbox" id="toggle-compass" checked> Toggle 3D Compas
             </label>
-            
+
+            <label>
+                <input type="checkbox" id="toggle-speed"> Enable Real-Time Speed
+            </label>
+
+            <div class="planet-selector" style="display: flex; align-items: center; justify-content: space-between; margin: 15px 0;">
+                <button id="prev-planet">&lt;</button>
+            <div id="current-planet-name" style="font-weight: bold; color: #00ffcc;">Terra</div>
+                 <button id="next-planet">&gt;</button>
+            </div>
+
+            <div id="planet-type" style="font-size: 12px; color: #aaa; text-align: center; margin-bottom: 15px;">Tipo: Planeta</div>
+
+            <!------------------------------------>
+
             <div class="coodinates-display">
                 <span class="display" id="cord-x">X:0.00</span>
                 <span class="display" id="cord-y">Y:0.00</span>

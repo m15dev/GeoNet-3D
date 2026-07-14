@@ -9,10 +9,9 @@ window.satelliteZoomDistances = {
 };
 
 /**
- * Cria e spawns um satélite com proporções customizadas
+ * Creates and spawns a customized box simulation representing a real satellite module
  */
 window.createSatellite = function(scene, name, color, orbitRadius, orbitSpeed, orbitInclination, width = 0.15, height = 0.1, depth = 0.15) {
-    // Geometria baseada nas proporções enviadas
     const satGeometry = new THREE.BoxGeometry(width, height, depth);
     
     const satMaterial = new THREE.MeshStandardMaterial({ 
@@ -34,20 +33,21 @@ window.createSatellite = function(scene, name, color, orbitRadius, orbitSpeed, o
     });
 };
 
-
-window.updateSatellites = function() {
+/**
+ * Performs vector translations. Accepts timeScale to adjust simulation speed dynamically.
+ */
+window.updateSatellites = function(timeScale = 1.0) {
     if (!window.meusSatellitesGlobais) return;
     
     window.meusSatellitesGlobais.forEach(sat => {
-        sat.angle += sat.speed;
+        // Apply timeScale to the orbital speed
+        sat.angle += (sat.speed * timeScale);
         
         if (sat.mesh.name === "telescopio_jwst") {
-            // Fica super longe, se movendo muito devagar acompanhando a translação de fundo
             sat.mesh.position.x = Math.sin(sat.angle) * sat.radius;
             sat.mesh.position.z = Math.cos(sat.angle) * sat.radius;
             sat.mesh.position.y = 0; 
         } else {
-            // Órbitas normais ao redor da Terra
             sat.mesh.position.x = Math.sin(sat.angle) * sat.radius;
             sat.mesh.position.z = Math.cos(sat.angle) * sat.radius;
             sat.mesh.position.y = Math.sin(sat.angle) * sat.inclination * (sat.radius * 0.5);
@@ -64,4 +64,4 @@ window.updateSatellites = function() {
 window.getSatelliteMeshes = function() {
     if (!window.meusSatellitesGlobais) return [];
     return window.meusSatellitesGlobais.map(sat => sat.mesh);
-};
+}; //67 hehehehe line 67, -- um sorry this was stupid ;/
