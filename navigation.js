@@ -6,18 +6,18 @@ import { startTracking } from './camera.js';
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
-// Static table holding names and labels
+// Table for the bodies and their types like sun is a star
 export const planetList = [
-    { name: "sol", label: "Sol", type: "Estrela" },
-    { name: "mercurio", label: "Mercúrio", type: "Planeta" },
-    { name: "venus", label: "Vênus", type: "Planeta" },
-    { name: "terra", label: "Terra", type: "Planeta" },
-    { name: "lua", label: "Lua", type: "Satélite Natural" },
-    { name: "marte", label: "Marte", type: "Planeta" },
-    { name: "jupiter", label: "Júpiter", type: "Planeta" },
-    { name: "saturno", label: "Saturno", type: "Planeta" },
-    { name: "urano", label: "Urano", type: "Planeta" },
-    { name: "netuno", label: "Netuno", type: "Planeta" }
+    { name: "sol", label: "Sun", type: "Star" },
+    { name: "mercurio", label: "Mercury", type: "Planet" },
+    { name: "venus", label: "Venus", type: "Planet" },
+    { name: "terra", label: "Earth", type: "Planet" },
+    { name: "lua", label: "Moon", type: "Natural Satelite" },
+    { name: "marte", label: "Mars", type: "Planet" },
+    { name: "jupiter", label: "Jupiter", type: "Planet" },
+    { name: "saturno", label: "Saturn", type: "Planet" },
+    { name: "urano", label: "Uranus", type: "Planet" },
+    { name: "netuno", label: "Neptune", type: "Planet" }
 ];
 
 export let currentPlanetIndex = 3; // Terra defaults
@@ -27,7 +27,7 @@ export function selectPlanet(index) {
     const planet = planetList[index];
 
     document.getElementById("current-planet-name").innerText = planet.label;
-    document.getElementById("planet-type").innerText = "Tipo: " + planet.type;
+    document.getElementById("planet-type").innerText = "Type: " + planet.type;
 
     const target = scene.getObjectByName(planet.name);
     if (!target) return;

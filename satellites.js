@@ -1,5 +1,6 @@
 import { scene } from './scene.js';
 import { earth } from './planets.js';
+import { SATELLITES } from "./satelliteData.js";
 
 // Global simulation storage keeping compatibility
 window.meusSatellitesGlobais = window.meusSatellitesGlobais || [];
@@ -7,7 +8,32 @@ window.meusSatellitesGlobais = window.meusSatellitesGlobais || [];
 /**
  * Creates and spawns a customized box simulation representing a real satellite module
  */
-export function createSatellite(name, color, orbitRadius, orbitSpeed, orbitInclination, width = 0.15, height = 0.1, depth = 0.15) {
+export function createSatellite(data) {
+
+    const {
+        name,
+        color,
+        altitude,
+        inclination,
+        period,
+        size
+    } = data;
+
+    const radius =
+    name === "jwst"
+        ? 10.0              // perto do ponto L2 no seu modelo
+        : 4 + altitude / 1000;
+    const speed = (Math.PI * 2) / period;
+
+    const orbitRadius = altitude / 100 + 4;
+    const orbitSpeed = (Math.PI * 2) / (period * 60);
+    const orbitInclination = THREE.MathUtils.degToRad(inclination);
+
+
+    const width = size.x;
+    const height = size.y;
+    const depth = size.z;
+
     const satGeometry = new THREE.BoxGeometry(width, height, depth);
     
     const satMaterial = new THREE.MeshStandardMaterial({ 
@@ -21,11 +47,12 @@ export function createSatellite(name, color, orbitRadius, orbitSpeed, orbitIncli
     scene.add(satellite);
     
     window.meusSatellitesGlobais.push({
-        mesh: satellite,
-        radius: orbitRadius,
-        speed: orbitSpeed,
-        inclination: orbitInclination,
-        angle: Math.random() * Math.PI * 2
+    mesh: satellite,
+    radius,
+    speed,
+    inclination: THREE.MathUtils.degToRad(inclination),
+    angle: Math.random() * Math.PI * 2
+
     });
 }
 
@@ -39,11 +66,12 @@ export function updateSatellites(timeScale = 1.0) {
         // Apply timeScale to the orbital speed
         sat.angle += (sat.speed * timeScale);
         
-        if (sat.mesh.name === "telescopio_jwst") {
+        if (sat.mesh.name === "JWST") {
             // Lock position relative to Earth
             sat.mesh.position.set(
                 earth.position.x + Math.sin(sat.angle) * sat.radius,
                 earth.position.y,
+//67 hehehehe line 67, -- um sorry this was stupid ;/
                 earth.position.z + Math.cos(sat.angle) * sat.radius
             );
         } else {
@@ -53,18 +81,15 @@ export function updateSatellites(timeScale = 1.0) {
                 earth.position.z + Math.cos(sat.angle) * sat.radius
             );
         }
+
         
         sat.mesh.lookAt(
             earth.position.x + Math.sin(sat.angle + 0.01) * sat.radius,
-            sat.mesh.name === "telescopio_jwst" ? earth.position.y : earth.position.y + Math.sin(sat.angle + 0.01) * sat.inclination * (sat.radius * 0.5),
+            sat.mesh.name === "JWST" ? earth.position.y : earth.position.y + Math.sin(sat.angle + 0.01) * sat.inclination * (sat.radius * 0.5),
             earth.position.z + Math.cos(sat.angle + 0.01) * sat.radius
         );
     });
 }
-
-
-
-//67 hehehehe line 67, -- um sorry this was stupid ;/
 
 export function getSatelliteMeshes() {
     if (!window.meusSatellitesGlobais) return [];
@@ -78,9 +103,7 @@ window.getSatelliteMeshes = getSatelliteMeshes;
 
 // Initialize the constellation of satellite objects
 export function initAllSatellites() {
-    createSatellite("satelite_iss", 0x00ffaa, 4.1, 0.025, 0.4, 0.4, 0.12, 0.25);      
-    createSatellite("satelite_hubble", 0x33aaff, 4.5, 0.018, 0.2, 0.15, 0.15, 0.35);
-    createSatellite("satelite_pace", 0xffcc00, 5.0, 0.02, 1.2, 0.18, 0.18, 0.18);
-    createSatellite("satelite_lageos", 0xff55aa, 7.5, 0.007, 0.7, 0.12, 0.12, 0.12);
-    createSatellite("telescopio_jwst", 0xff6600, 10.0, 0.001, 0.0, 0.4, 0.2, 0.4);
+    SATELLITES.forEach(createSatellite);
 }
+
+

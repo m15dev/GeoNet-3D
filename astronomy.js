@@ -2,11 +2,12 @@ import { mercury, venus, earth, moon, mars, jupiter, saturnGroup, uranusGroup, n
 
 // Simulation speeds and states        
 export let simulationState = "NORMAL"; // NORMAL,
-                                      //  ALIGNING(does the animation to align them all in a straing line),
+                                       //  ALIGNING(does the animation to align them all in a straing line),
                                      //  MOVING_TO_REAL (goes to the actual position when real-speed toggled)
 export let isRealSpeed = false;
 export let stateStartTime = 0;
 export let rotateEarth = true;
+const ANIMATION_DURATION = 6000; // segundos
 
 // Orbital angles tracking
 export let moonOrbitAngle = 0;
@@ -50,6 +51,34 @@ function getAngleFromCalendar(name) {
         (elapsedDays % period) / period;
 
     return orbitFraction * Math.PI * 2;
+}
+
+// makes the speed that earth actually rotates
+function getEarthRotationFromTime() {
+
+    const now = new Date();
+
+    const hours =
+        now.getUTCHours() +
+        now.getUTCMinutes() / 60 +
+        now.getUTCSeconds() / 3600 +
+        now.getUTCMilliseconds() / 3600000;
+
+    // 360° em 24 horas
+    return (hours / 24) * Math.PI * 2 + Math.PI;
+
+}
+
+//This is to a bug ? well when i press to toggle the real speed, it just spins verry fast uncontrolaby, now it doesn't, COOL :D
+function normalizeAngle(angle) {
+
+    angle %= Math.PI * 2;
+
+    if (angle < 0)
+        angle += Math.PI * 2;
+
+    return angle;
+
 }
 
 // Define the astronomical bodies and alignment properties
@@ -120,9 +149,15 @@ export function setIsRealSpeed(value) {
 }
 
 export function startAligning() {
+
     bodies.forEach(body => {
-        body.targetAngle =
-            getAngleFromCalendar(body.mesh.name);
+        // so it updates corretly - fix the earth snap bug
+        body.mesh.updateMatrixWorld();
+
+        body.angle = normalizeAngle(body.angle);
+        body.startAngle = body.angle;
+        body.targetAngle = getAngleFromCalendar(body.mesh.name);
+
     });
     simulationState = "ALIGNING";
     stateStartTime = performance.now();
@@ -133,67 +168,171 @@ export function stopAligning() {
     isRealSpeed = false;
 }
 
-// Coordinate updates for all system entities
+// Coordinate updates for all system entitie
+// s
 export function updateAstronomy() {
     const now = performance.now();
     const timeScale = isRealSpeed ? 0.005 : 1.0;
 
     if (simulationState === "ALIGNING") {
-        let done = true;
+
+    const progress = Math.min(
+        (now - stateStartTime) / ANIMATION_DURATION,
+        1
+    );
+
+    bodies.forEach(body => {
+
+        const alignAngle =
+            body.mesh.name === "lua"
+                ? Math.PI / 2
+                : 0;
+
+        body.angle =
+            body.startAngle +
+            (alignAngle - body.startAngle) * progress;
+
+        if (body.center) {
+
+            body.mesh.position.set(
+                body.center.position.x + Math.sin(body.angle) * body.radius,
+                body.center.position.y,
+                body.center.position.z + Math.cos(body.angle) * body.radius
+            );
+
+        } else {
+
+            body.mesh.position.set(
+                Math.sin(body.angle) * body.radius,
+                0,
+                Math.cos(body.angle) * body.radius
+            );
+
+        }
+
+    });
+
+    if (progress >= 1) {
+
         bodies.forEach(body => {
-            body.angle = THREE.MathUtils.lerp(body.angle, 0, 0.02);
 
-            if (body.center) {
-                body.mesh.position.set(
-                    body.center.position.x + Math.sin(body.angle) * body.radius,
-                    body.center.position.y,
-                    body.center.position.z + Math.cos(body.angle) * body.radius
-                );
-            } else {
-                body.mesh.position.set(
-                    Math.sin(body.angle) * body.radius,
-                    0,
-                    Math.cos(body.angle) * body.radius
-                );
-            }
+            body.startAngle = body.angle;
 
-            if (Math.abs(body.angle) > 0.002) done = false;
         });
 
-        if (done) {
-            if (now - stateStartTime > 3000) {
-                simulationState = "MOVING_TO_REAL";
-            }
-        }
-    } 
+        simulationState = "MOVING_TO_REAL";
+        stateStartTime = performance.now();
+
+    }
+
+}
     else if (simulationState === "MOVING_TO_REAL") {
-        let done = true;
-        bodies.forEach(body => {
-            const targetAngle = body.targetAngle;
-            body.angle = THREE.MathUtils.lerp(body.angle, targetAngle, 0.01);
 
-            if (body.center) {
-                body.mesh.position.set(  
-                    body.center.position.x + Math.sin(body.angle) * body.radius,
-                    body.center.position.y,
-                    body.center.position.z + Math.cos(body.angle) * body.radius
-                );
-            } else {
-                body.mesh.position.set(
-                    Math.sin(body.angle) * body.radius,
-                    0,
-                    Math.cos(body.angle) * body.radius
-                );
-            }
+    const progress = Math.min(
+        (now - stateStartTime) / ANIMATION_DURATION,
+        1
+    );
 
-            if (Math.abs(body.angle - targetAngle) > 0.002) done = false;
-        });
+    bodies.forEach(body => {
 
-        if (done) {
-            simulationState = "NORMAL";
-            isRealSpeed = true;
+        body.angle =
+            body.startAngle +
+            (body.targetAngle - body.startAngle) * progress;
+
+        if (body.center) {
+
+            body.mesh.position.set(
+                body.center.position.x + Math.sin(body.angle) * body.radius,
+                body.center.position.y,
+                body.center.position.z + Math.cos(body.angle) * body.radius
+            );
+
+        } else {
+
+            body.mesh.position.set(
+                Math.sin(body.angle) * body.radius,
+                0,
+                Math.cos(body.angle) * body.radius
+            );
+
         }
-    } 
+
+    });
+
+    if (progress >= 1) {
+
+        moonOrbitAngle     = bodies[0].targetAngle;
+        mercuryOrbitAngle  = bodies[1].targetAngle;
+        venusOrbitAngle    = bodies[2].targetAngle;
+        earthOrbitAngle    = bodies[3].targetAngle;
+        marsOrbitAngle     = bodies[4].targetAngle;
+        jupiterOrbitAngle  = bodies[5].targetAngle;
+        saturnOrbitAngle   = bodies[6].targetAngle;
+        uranusOrbitAngle   = bodies[7].targetAngle;
+        neptuneOrbitAngle  = bodies[8].targetAngle;
+
+        // Atualiza imediatamente as posições finais
+        mercury.position.set(
+            Math.sin(mercuryOrbitAngle) * 18,
+            0,
+            Math.cos(mercuryOrbitAngle) * 18
+        );
+
+        venus.position.set(
+            Math.sin(venusOrbitAngle) * 26,
+            0,
+            Math.cos(venusOrbitAngle) * 26
+        );
+
+        earth.position.set(
+            Math.sin(earthOrbitAngle) * 38,
+            0,
+            Math.cos(earthOrbitAngle) * 38
+        );
+
+        moon.position.set(
+            earth.position.x + Math.sin(moonOrbitAngle) * 12,
+            earth.position.y + Math.sin(moonOrbitAngle * 0.5) * 2,
+            earth.position.z + Math.cos(moonOrbitAngle) * 12
+        );
+
+        mars.position.set(
+            Math.sin(marsOrbitAngle) * 50,
+            0,
+            Math.cos(marsOrbitAngle) * 50
+        );
+
+        jupiter.position.set(
+            Math.sin(jupiterOrbitAngle) * 75,
+            0,
+            Math.cos(jupiterOrbitAngle) * 75
+        );
+
+        saturnGroup.position.set(
+            Math.sin(saturnOrbitAngle) * 105,
+            0,
+            Math.cos(saturnOrbitAngle) * 105
+        );
+
+        uranusGroup.position.set(
+            Math.sin(uranusOrbitAngle) * 135,
+            0,
+            Math.cos(uranusOrbitAngle) * 135
+        );
+
+        neptune.position.set(
+
+            Math.sin(neptuneOrbitAngle) * 165,
+            0,
+            Math.cos(neptuneOrbitAngle) * 165
+        );
+
+        simulationState = "NORMAL";
+        isRealSpeed = true;
+
+    }
+
+}
     else {
         // Mercury Translation
         mercuryOrbitAngle += 0.008 * timeScale;
@@ -205,10 +344,29 @@ export function updateAstronomy() {
         venus.position.set(Math.sin(venusOrbitAngle) * 26, 0, Math.cos(venusOrbitAngle) * 26);
         venus.rotation.y -= 0.002 * timeScale; 
 
-        // Earth Translation
+        // Earth Translation 
         earthOrbitAngle += 0.004 * timeScale;
         earth.position.set(Math.sin(earthOrbitAngle) * 38, 0, Math.cos(earthOrbitAngle) * 38);
-        if (rotateEarth) earth.rotation.y += 0.002 * timeScale;
+        if (rotateEarth) {
+            if (isRealSpeed) {
+                if (rotateEarth) {
+                    if (isRealSpeed) {
+
+                        const targetRotation = getEarthRotationFromTime();
+
+                        earth.rotation.y +=
+                            (targetRotation - earth.rotation.y) * 0.05;
+
+                    } else {
+
+                        earth.rotation.y += 0.002;
+
+                    }
+                }
+            } else {
+                earth.rotation.y += 0.002;
+            }
+        }
 
         // Moon Translation & Tidal Locking
         moonOrbitAngle += 0.005 * timeScale; 
