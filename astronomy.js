@@ -354,7 +354,7 @@ export function updateAstronomy() {
 
                         const targetRotation = getEarthRotationFromTime();
 
-                        earth.rotation.y +=
+                        earth.rotation.y +=  //kLVPd
                             (targetRotation - earth.rotation.y) * 0.05;
 
                     } else {

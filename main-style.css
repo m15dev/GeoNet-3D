@@ -84,3 +84,70 @@ body {
     background: #00ffcc;
     color: black;
 }
+
+
+#planetInfo {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+
+    width: 240px;
+
+    background: rgba(10, 10, 25, 0.85);
+    color: #fff;
+
+    padding: 15px;
+
+    border-radius: 8px;
+    border: 1px solid #3a3a5c;
+
+    font-family: sans-serif;
+
+    z-index: 100;
+    pointer-events: auto;
+}
+
+#planetInfo h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    color: #00ffcc;
+}
+
+#planetInfo hr {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,.15);
+    margin: 12px 0;
+}
+
+.infoRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin: 8px 0;
+    padding: 6px 8px;
+
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 6px;
+
+    font-family: monospace;
+    font-size: 13px;
+}
+
+.infoRow span:last-child{
+    color:#00ffcc;
+    font-weight:bold;
+}
+
+.placeholder{
+    margin-top:12px;
+    padding:10px;
+
+    background: rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:6px;
+
+    font-size:13px;
+    color:#bbb;
+}

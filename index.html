@@ -13,13 +13,27 @@
         <hr>
         <div class="control-group">
             <label>
-                <input type="checkbox" id="toggle-stars" checked>
-                Toggle Stars
+                <input type="checkbox" id="toggle-ui" checked>Hide UI
             </label>
 
             <label>
-                <input type="checkbox" id="toggle-lock">
-                Lock Camera
+                <input type="checkbox" id="toggle-stars" checked>Toggle Stars
+            </label>
+
+            <label>
+                <input type="checkbox" id="toggle-orbits"> Toggle Orbits
+            </label>
+
+            <label> 
+                <input type="checkbox" id="toggle-ArtficialSatelites"> Artificial Satellites 
+            </label>
+
+            <label>
+                <input type="checkbox" id="toggle-label"> Toggle Labels
+            </label>
+
+            <label>
+                <input type="checkbox" id="toggle-lock"> Lock Camera
             </label>
 
             <label>
@@ -45,7 +59,50 @@
             </div>
         </div>
         
+        
+
     </div>
+        <div id="planetInfo">
+        <h2>Earth</h2>
+        <hr>
+        <div class="infoRow">
+            <span>Radius</span>
+            <span>6,371 km</span>
+        </div>
+
+        <div class="infoRow">
+            <span>Mass</span>
+            <span>5.97 ×10²⁴ kg</span>
+        </div>
+
+        <div class="infoRow">
+            <span>Day</span>
+            <span>23 h 56 min</span>
+        </div>
+
+        <div class="infoRow">
+            <span>Year</span>
+            <span>365.25 days</span>
+        </div>
+
+        <div class="infoRow">
+            <span>Moons</span>
+            <span>1</span>
+        </div>
+
+        <div class="infoRow">
+            <span>Distance*Sun</span>
+            <span>149.6 M km</span>
+        </div>
+
+        <hr>
+
+        <div class="placeholder">
+            Select a planet to view its information.
+        </div>
+
+    </div>
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
