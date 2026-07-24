@@ -17,7 +17,7 @@ import { initAllSatellites, updateSatellites } from './satellites.js';
 import { setupCameraControl, updateCameraMovement, updateTrackingSystem, snapCameraTo } from './camera.js';
 import { updateAstronomy, isRealSpeed } from './astronomy.js';
 import { initNavigationUI, selectPlanet } from './navigation.js';
-import { bindUIControls, updateCoordinateDisplay } from './ui.js';
+import { bindUIControls, updateCoordinateDisplay, setupHideUI } from './ui.js';
 import { renderCompass } from './compass.js';
 import { initLighting } from './lighting.js';
 
@@ -43,6 +43,9 @@ const localStarField = new THREE.Points(starsGeometry, starsMaterial);
 scene.add(localStarField);
 
 // --- INITIALIZATION FOR IT TOO WORK ---
+
+// makes the ui work
+setupHideUI();
 
 initLighting();
 

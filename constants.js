@@ -12,7 +12,7 @@ export const zoomDistances = {
     "netuno": 12.0
 };
 
-// Satellite specific zoom distances
+// Satellite specific zoom distances 
 export const satelliteZoomDistances = {
     "satelite_iss": 1.5,
     "satelite_hubble": 1.0,
@@ -25,4 +25,4 @@ export const satelliteZoomDistances = {
 export const COMPASS_SIZE = 80;
 
 // Camera configuration
-export const MAX_TRANSITION_TIME = 1000; // milissegundos
+export const MAX_TRANSITION_TIME = 1000; // milissecons
