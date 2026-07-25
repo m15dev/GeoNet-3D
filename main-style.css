@@ -155,7 +155,7 @@ body {
 #ui-panel, #planetInfo {
     opacity: 1;
     visibility: visible;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 #ui-panel.hidden, #planetInfo.hidden {
     opacity: 0;

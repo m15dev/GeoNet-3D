@@ -1,5 +1,8 @@
 import { scene } from './scene.js';
 
+// Lista global para guardar as órbitas criadas
+const orbitMeshes = [];
+
 // Factory utility to produce orbital path visualizer lines
 export function createOrbit(radius, color = 0xffffff) {
     const segments = 128;
@@ -19,7 +22,16 @@ export function createOrbit(radius, color = 0xffffff) {
     geometry.setFromPoints(points);
     const orbit = new THREE.Line(geometry, material);
     scene.add(orbit);
+    
+    // Salva na nossa listinha
+    orbitMeshes.push(orbit);
+    
     return orbit;
+}
+
+// Retorna todas as órbitas para o UI controlar
+export function getOrbitMeshes() {
+    return orbitMeshes;
 }
 
 // Generate orbits for each planets

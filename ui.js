@@ -3,53 +3,102 @@ import { startAligning, stopAligning } from './astronomy.js';
 import { setLockCamera } from './camera.js';
 import { setShowCompass } from './compass.js';
 import { formatCoordinate } from './utils.js';
+import { getSatelliteMeshes } from './satellites.js';
+import { getOrbitMeshes } from './orbits.js';
 
 // Elements bound to the starfield configuration
 export function bindUIControls(starFieldMesh) {
-    document.getElementById('toggle-stars').addEventListener('change', (e) => {
-        starFieldMesh.visible = e.target.checked;
-    });
+    // 1. Estrelas
+    const toggleStars = document.getElementById('toggle-stars');
+    if (toggleStars && starFieldMesh) {
+        toggleStars.addEventListener('change', (e) => {
+            starFieldMesh.visible = e.target.checked;
+        });
+    }
 
-    document.getElementById('toggle-lock').addEventListener('change', (e) => {
-        setLockCamera(e.target.checked);
-    });
+    // 2. Órbitas
+    const toggleOrbits = document.getElementById('toggle-orbits');
+    if (toggleOrbits) {
+        toggleOrbits.addEventListener('change', (e) => {
+            const show = e.target.checked;
+            const orbits = getOrbitMeshes();
+            orbits.forEach(orbit => {
+                orbit.visible = show;
+            });
+        });
+    }
 
-    document.getElementById('toggle-compass').addEventListener('change', (e) => {
-        setShowCompass(e.target.checked);
-    });
+    // 3. Satélites Artificiais
+    const toggleSatellites = document.getElementById('toggle-ArtficialSatelites');
+    if (toggleSatellites) {
+        toggleSatellites.addEventListener('change', (e) => {
+            const show = e.target.checked;
+            const satMeshes = getSatelliteMeshes();
+            satMeshes.forEach(sat => {
+                sat.visible = show;
+            });
+        });
+    }
 
-    document.getElementById('toggle-speed').addEventListener('change', (e) => {
-        if (e.target.checked) {
-            startAligning();
-        } else {
-            stopAligning();
-        }
-    });
-}
+    // 4. Trava de Câmera
+    const toggleLock = document.getElementById('toggle-lock');
+    if (toggleLock) {
+        toggleLock.addEventListener('change', (e) => {
+            setLockCamera(e.target.checked);
+        });
+    }
 
-// Positioning code that give me the position, yeh 
-export function updateCoordinateDisplay() {
-    if (camera) {
-        document.getElementById('cord-x').innerText = `X:${formatCoordinate(camera.position.x)}`;
-        document.getElementById('cord-y').innerText = `Y:${formatCoordinate(camera.position.y)}`;
-        document.getElementById('cord-z').innerText = `Z:${formatCoordinate(camera.position.z)}`;
+    // 5. Bússola 3D
+    const toggleCompass = document.getElementById('toggle-compass');
+    if (toggleCompass) {
+        toggleCompass.addEventListener('change', (e) => {
+            setShowCompass(e.target.checked);
+        });
+    }
+
+    // 6. Velocidade Real
+    const toggleSpeed = document.getElementById('toggle-speed');
+    if (toggleSpeed) {
+        toggleSpeed.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                startAligning();
+            } else {
+                stopAligning();
+            }
+        });
     }
 }
 
-//this thing operates the UI HIDE 
+// Positioning code that gives the exact camera coordinates
+export function updateCoordinateDisplay() {
+    if (camera) {
+        const cordX = document.getElementById('cord-x');
+        const cordY = document.getElementById('cord-y');
+        const cordZ = document.getElementById('cord-z');
+
+        if (cordX) cordX.innerText = `X:${formatCoordinate(camera.position.x)}`;
+        if (cordY) cordY.innerText = `Y:${formatCoordinate(camera.position.y)}`;
+        if (cordZ) cordZ.innerText = `Z:${formatCoordinate(camera.position.z)}`;
+    }
+}
+
+// Operates the UI HIDE feature with smooth transition and floating restore button
 export function setupHideUI() {
     const toggleUiCheckbox = document.getElementById('toggle-ui');
     const uiPanel = document.getElementById('ui-panel');
-    const planetInfo = document.getElementById('planetInfo'); // Pega o painel de info dos planetas
+    const planetInfo = document.getElementById('planetInfo'); 
 
     if (!toggleUiCheckbox || !uiPanel) return;
 
+    // Cria o botão flutuante de "Mostrar UI" no canto esquerdo
     const btnShowUI = document.createElement('button');
     btnShowUI.innerText = 'Show UI';
 
     Object.assign(btnShowUI.style, {
-        display: 'none', position: 'fixed',
-        top: '20px', left: '20px',
+        display: 'none', 
+        position: 'fixed',
+        top: '20px', 
+        left: '20px', // No canto esquerdo conforme solicitado
         zIndex: '9999', 
         background: 'rgba(10, 10, 25, 0.95)',
         color: '#00ffcc',

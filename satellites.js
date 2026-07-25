@@ -2,57 +2,88 @@ import { scene } from './scene.js';
 import { earth } from './planets.js';
 import { SATELLITES } from "./satelliteData.js";
 
-// Global simulation storage keeping compatibility
 window.meusSatellitesGlobais = window.meusSatellitesGlobais || [];
 
+// Configurando o GLTFLoader junto com o DRACOLoader para ler os arquivos compactados da NASA
+const loader = new THREE.GLTFLoader();
+const dracoLoader = new THREE.DRACOLoader();
+dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+loader.setDRACOLoader(dracoLoader);
+
 /**
- * Creates and spawns a customized box simulation representing a real satellite module
+ * Creates and spawns a 3D model simulation representing a real satellite module
  */
 export function createSatellite(data) {
-
     const {
         name,
-        color,
         altitude,
         inclination,
-        period,
-        size
+        period
     } = data;
 
     const radius =
-    name === "jwst"
-        ? 10.0              // perto do ponto L2 no seu modelo
-        : 4 + altitude / 1000;
+        name === "jwst"
+            ? 10.0          
+            : 4 + altitude / 1000;
     const speed = (Math.PI * 2) / period;
+    const inclinationRad = THREE.MathUtils.degToRad(inclination);
 
-    const orbitRadius = altitude / 100 + 4;
-    const orbitSpeed = (Math.PI * 2) / (period * 60);
-    const orbitInclination = THREE.MathUtils.degToRad(inclination);
+    const satelliteGroup = new THREE.Group();
+    satelliteGroup.name = name;
+    scene.add(satelliteGroup);
 
+    let fileName = "";
+    const lowerName = name.toLowerCase();
 
-    const width = size.x;
-    const height = size.y;
-    const depth = size.z;
+    // Seleciona o arquivo correspondente a cada satélite
+    if (lowerName.includes("iss") || lowerName.includes("estacao")) {
+        fileName = 'International_Space_Station_(ISS)_(A).glb';
+    } else if (lowerName.includes("hubble")) {
+        fileName = 'Hubble_Space_Telescope_(A).glb';
+    } else if (lowerName.includes("jwst")) {
+        fileName = 'James_Webb_Space_Telescope_(B).glb';
+    } else if (lowerName.includes("landsat")) {
+        fileName = 'Landsat_8.glb';
+    } else if (lowerName.includes("sentinel")) {
+        fileName = 'Jason_Continuity_of_Service_(Sentinel-6).glb';
+    } else {
+        fileName = 'Hubble_Space_Telescope_(A).glb'; 
+    }
 
-    const satGeometry = new THREE.BoxGeometry(width, height, depth);
-    
-    const satMaterial = new THREE.MeshStandardMaterial({ 
-        color: color,
-        roughness: 0.3,
-        metalness: 0.7
-    });
-    
-    const satellite = new THREE.Mesh(satGeometry, satMaterial);
-    satellite.name = name;
-    scene.add(satellite);
-    
+    // Carrega o modelo 3D e aplica o tamanho personalizado para cada um
+    loader.load(
+        fileName,
+        (gltf) => {
+            const model = gltf.scene;
+
+            // 1. AJUSTE DE TAMANHO (Scale): 
+            // Aumente ou diminua os números (X, Y, Z) para cada satélite
+            if (lowerName.includes("iss") || lowerName.includes("estacao")) {
+                model.scale.set(0.02, 0.02, 0.02); 
+            } else if (lowerName.includes("hubble")) {
+                model.scale.set(0.0005, 0.0005, 0.0005); 
+            } else if (lowerName.includes("jwst")) {
+                model.scale.set(0.04, 0.04, 0.04); 
+            } else if (lowerName.includes("landsat")) {
+                model.scale.set(0.03, 0.03, 0.03); 
+            } else if (lowerName.includes("sentinel")) {
+                model.scale.set(0.03, 0.03, 0.03); 
+            }
+
+            satelliteGroup.add(model);
+        },
+        undefined,
+        (error) => {
+            console.error(`Erro ao carregar o modelo 3D para ${name}:`, error);
+        }
+    );
+
     window.meusSatellitesGlobais.push({
-    mesh: satellite,
-    radius,
-    speed,
-    inclination: THREE.MathUtils.degToRad(inclination),
-    angle: Math.random() * Math.PI * 2
-
+        mesh: satelliteGroup,
+        radius,
+        speed,
+        inclination: inclinationRad,
+        angle: Math.random() * Math.PI * 2
     });
 }
 
@@ -63,15 +94,12 @@ export function updateSatellites(timeScale = 1.0) {
     if (!window.meusSatellitesGlobais) return;
     
     window.meusSatellitesGlobais.forEach(sat => {
-        // Apply timeScale to the orbital speed
         sat.angle += (sat.speed * timeScale);
         
         if (sat.mesh.name === "JWST") {
-            // Lock position relative to Earth
             sat.mesh.position.set(
                 earth.position.x + Math.sin(sat.angle) * sat.radius,
                 earth.position.y,
-//67 hehehehe line 67, -- um sorry this was stupid ;/
                 earth.position.z + Math.cos(sat.angle) * sat.radius
             );
         } else {
@@ -81,7 +109,6 @@ export function updateSatellites(timeScale = 1.0) {
                 earth.position.z + Math.cos(sat.angle) * sat.radius
             );
         }
-
         
         sat.mesh.lookAt(
             earth.position.x + Math.sin(sat.angle + 0.01) * sat.radius,
@@ -96,14 +123,10 @@ export function getSatelliteMeshes() {
     return window.meusSatellitesGlobais.map(sat => sat.mesh);
 }
 
-// Expose interface functions globally so i can operate those anywhere
 window.createSatellite = (sceneRef, ...args) => createSatellite(...args);
 window.updateSatellites = updateSatellites;
 window.getSatelliteMeshes = getSatelliteMeshes;
 
-// Initialize the constellation of satellite objects
 export function initAllSatellites() {
     SATELLITES.forEach(createSatellite);
 }
-
-
