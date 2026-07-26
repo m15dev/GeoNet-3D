@@ -73,6 +73,8 @@ requestAnimationFrame(() => {
     snapCameraTo(earth);
 });
 
+/*---------------------------------------*/
+
 // --- GLOBO EXCLUSIVO PARA A TELA DE INTRODUÇÃO ---
 let introAnimationId = null;
 
@@ -80,47 +82,41 @@ function initIntroGlobe() {
     const container = document.getElementById('intro-globe-container');
     if (!container) return;
 
-    // Garante dimensões mínimas se a tela ainda estiver carregando
-    const width = container.clientWidth || (window.innerWidth - 600);
-    const height = container.clientHeight || window.innerHeight;
+    // Força dimensões válidas para evitar canvas 0x0
+    const width = container.clientWidth || 300;
+    const height = container.clientHeight || 300;
 
-    // 1. Cria a cena e câmera isoladas para a intro
     const introScene = new THREE.Scene();
     const introCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
     introCamera.position.z = 4.5;
 
-    // 2. Renderer isolado com fundo transparente
     const introRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     introRenderer.setSize(width, height);
     introRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     
-    // Limpa qualquer canvas antigo caso a função rode mais de uma vez
     container.innerHTML = '';
     container.appendChild(introRenderer.domElement);
 
-    // 3. Iluminação dedicada para a intro
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
     introScene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0x38bdf8, 1.2);
+    const dirLight = new THREE.DirectionalLight(0x38bdf8, 1.5);
     dirLight.position.set(5, 3, 5);
     introScene.add(dirLight);
 
-    // 4. Carrega a textura da Terra diretamente no local
     const textureLoader = new THREE.TextureLoader();
-    const earthTexture = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg');
+    const earthTexture = textureLoader.load('./earth_atmos_2048.jpg');
 
     const geometry = new THREE.SphereGeometry(1.5, 64, 64);
     const material = new THREE.MeshStandardMaterial({
         map: earthTexture,
-        roughness: 0.6,
+        roughness: 0.5,
         metalness: 0.1
     });
 
     const introEarth = new THREE.Mesh(geometry, material);
     introScene.add(introEarth);
 
-    // 5. Loop de Rotação da Intro
     function animateIntro() {
         introAnimationId = requestAnimationFrame(animateIntro);
         introEarth.rotation.y += 0.003;
@@ -130,22 +126,23 @@ function initIntroGlobe() {
     animateIntro();
 }
 
-// Inicia o globo da intro
+// Executa a criação do globo imediatamente
 initIntroGlobe();
 
-// Expondo a função para o botão "Start Exploring" no HTML
-window.closeCard = function() {
-    // Para o loop de animação do globo da intro
+// --- LÓGICA DO BOTÃO "START EXPLORING" ---
+function closeCard() {
+    // Para a animação do globo da intro
     if (introAnimationId) {
         cancelAnimationFrame(introAnimationId);
     }
 
+    // Esconde o painel da intro
     const card = document.getElementById('welcome-card');
     if (card) {
         card.style.display = 'none';
     }
 
-    // Ativa o canvas e as interfaces do sistema principal
+    // Exibe a cena 3D principal e a UI
     const canvasContainer = document.getElementById('canvas-container');
     const uiPanel = document.getElementById('ui-panel');
     const planetInfo = document.getElementById('planetInfo');
@@ -154,10 +151,19 @@ window.closeCard = function() {
     if (uiPanel) uiPanel.style.display = 'block';
     if (planetInfo) planetInfo.style.display = 'block';
 
-    // Ajusta o viewport do Three.js para o tamanho total da janela
+    // Ajusta o tamanho da cena principal para a tela toda
     if (typeof camera !== 'undefined' && typeof renderer !== 'undefined') {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
-};
+}
+
+// 1. Torna a função global para caso o HTML ainda use onclick="closeCard()"
+window.closeCard = closeCard;
+
+// 2. Adiciona o ouvinte de clique direto no botão caso o HTML use id="btn-start"
+const startBtn = document.getElementById('btn-start');
+if (startBtn) {
+    startBtn.addEventListener('click', closeCard);
+}
