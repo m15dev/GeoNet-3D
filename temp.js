@@ -1,4 +1,5 @@
  //this part takes care of getting the actual data and positioning them *reanemd becouse of case sentive name mismatch*
+ //had to rename this thing that it's making my head ache, cus of sum damn linux case sentitive thing
 
  export const SATELLITES = [
 
