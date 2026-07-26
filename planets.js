@@ -3,8 +3,8 @@ import { scene } from './scene.js';
 const textureLoader = new THREE.TextureLoader();
 
 // Materials & Textures
-const earthTexture = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg');
-const moonTexture = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/moon_1024.jpg');
+const earthTexture = textureLoader.load('./earth_atmos_2048.jpg'); 
+const moonTexture  = textureLoader.load('./moon_1024.jpg');
 
 // Sun (Sol)
 export const sun = new THREE.Mesh(
