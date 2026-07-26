@@ -12,16 +12,20 @@
 
 import { scene, camera, renderer, controls } from './scene.js';
 import { initAllOrbits } from './orbits.js';
-import { earth } from './planets.js'; // REMOVIDO o earthTexture daqui!
+import { earth } from './planets.js';
 import { initAllSatellites, updateSatellites } from './satellites.js';
 import { setupCameraControl, updateCameraMovement, updateTrackingSystem, snapCameraTo } from './camera.js';
 import { updateAstronomy, isRealSpeed } from './astronomy.js';
-import { initNavigationUI, selectPlanet } from './navigation.js';
+import { initNavigationUI } from './navigation.js';
 import { bindUIControls, updateCoordinateDisplay, setupHideUI } from './ui.js';
 import { renderCompass } from './compass.js';
 import { initLighting } from './lighting.js';
 
-// --- STARFIELD BACKGROUND GERENATOR ---
+// --- ESTADOS DO SISTEMA ---
+let isMainAppRunning = false;
+let introAnimationId = null;
+
+// --- STARFIELD BACKGROUND GENERATOR ---
 const starsGeometry = new THREE.BufferGeometry();
 const starsCount = 3500; 
 const starPositions = new Float32Array(starsCount * 3);
@@ -42,47 +46,11 @@ const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.2 });
 const localStarField = new THREE.Points(starsGeometry, starsMaterial);
 scene.add(localStarField);
 
-// --- INITIALIZATION FOR IT TOO WORK ---
-
-setupHideUI();
-initLighting();
-initAllOrbits();
-initAllSatellites();
-bindUIControls(localStarField);
-initNavigationUI();
-setupCameraControl(earth, renderer.domElement);
-
-// --- MAIN ANIMATION LOOP ---
-function animate() {
-    requestAnimationFrame(animate);
-
-    const timeScale = isRealSpeed ? 0.005 : 1.0;
-
-    updateAstronomy();
-    updateSatellites(timeScale);
-    updateCameraMovement();
-    updateTrackingSystem(timeScale);
-    renderer.render(scene, camera);
-    renderCompass();
-    updateCoordinateDisplay();
-}
-
-animate();
-
-requestAnimationFrame(() => {
-    snapCameraTo(earth);
-});
-
-/*---------------------------------------*/
-
-// --- GLOBO EXCLUSIVO PARA A TELA DE INTRODUÇÃO ---
-let introAnimationId = null;
-
+// --- 1. GLOBO DA INTRODUÇÃO ---
 function initIntroGlobe() {
     const container = document.getElementById('intro-globe-container');
     if (!container) return;
 
-    // Força dimensões válidas para evitar canvas 0x0
     const width = container.clientWidth || 300;
     const height = container.clientHeight || 300;
 
@@ -118,31 +86,51 @@ function initIntroGlobe() {
     introScene.add(introEarth);
 
     function animateIntro() {
-        introAnimationId = requestAnimationFrame(animateIntro);
-        introEarth.rotation.y += 0.003;
-        introRenderer.render(introScene, introCamera);
+        if (!isMainAppRunning) {
+            introAnimationId = requestAnimationFrame(animateIntro);
+            introEarth.rotation.y += 0.003;
+            introRenderer.render(introScene, introCamera);
+        }
     }
 
     animateIntro();
 }
 
-// Executa a criação do globo imediatamente
+// Inicia o globo imediatamente
 initIntroGlobe();
 
-// --- LÓGICA DO BOTÃO "START EXPLORING" ---
+// --- 2. MAIN ANIMATION LOOP (SÓ RODA APÓS O CLIQUE) ---
+function animateMain() {
+    if (!isMainAppRunning) return;
+
+    requestAnimationFrame(animateMain);
+
+    const timeScale = isRealSpeed ? 0.005 : 1.0;
+
+    updateAstronomy();
+    updateSatellites(timeScale);
+    updateCameraMovement();
+    updateTrackingSystem(timeScale);
+    renderer.render(scene, camera);
+    renderCompass();
+    updateCoordinateDisplay();
+}
+
+// --- 3. AÇÃO DO BOTÃO START EXPLORING ---
 function closeCard() {
-    // Para a animação do globo da intro
+    if (isMainAppRunning) return;
+    isMainAppRunning = true;
+
+    // Cancela o loop do globo da intro
     if (introAnimationId) {
         cancelAnimationFrame(introAnimationId);
     }
 
-    // Esconde o painel da intro
+    // Esconde a Intro
     const card = document.getElementById('welcome-card');
-    if (card) {
-        card.style.display = 'none';
-    }
+    if (card) card.style.display = 'none';
 
-    // Exibe a cena 3D principal e a UI
+    // Exibe a Aplicação Principal
     const canvasContainer = document.getElementById('canvas-container');
     const uiPanel = document.getElementById('ui-panel');
     const planetInfo = document.getElementById('planetInfo');
@@ -151,19 +139,32 @@ function closeCard() {
     if (uiPanel) uiPanel.style.display = 'block';
     if (planetInfo) planetInfo.style.display = 'block';
 
-    // Ajusta o tamanho da cena principal para a tela toda
-    if (typeof camera !== 'undefined' && typeof renderer !== 'undefined') {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    }
+    // Inicializa os sistemas pesados APENAS AGORA com a tela visível
+    setupHideUI();
+    initLighting();
+    initAllOrbits();
+    initAllSatellites();
+    bindUIControls(localStarField);
+    initNavigationUI();
+    setupCameraControl(earth, renderer.domElement);
+
+    // Ajusta Câmera e Renderer ao tamanho real da janela
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    // Inicia o Loop Principal do App
+    animateMain();
+
+    requestAnimationFrame(() => {
+        snapCameraTo(earth);
+    });
 }
 
-// 1. Torna a função global para caso o HTML ainda use onclick="closeCard()"
+// Expõe para a Janela Global e EventListener
 window.closeCard = closeCard;
 
-// 2. Adiciona o ouvinte de clique direto no botão caso o HTML use id="btn-start"
 const startBtn = document.getElementById('btn-start');
 if (startBtn) {
-    startBtn.addEventListener('click', closeCard);
+    startBtn.onclick = closeCard;
 }
