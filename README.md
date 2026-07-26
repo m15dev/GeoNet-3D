@@ -24,6 +24,8 @@ GeoNet 3D is an interactive 3D visualization of the Solar System built with **Th
 
 ## Controls
 
+> 🖥️ **Note:** This site is optimized for desktop browsers. Mobile devices may not offer the best experience.
+
 ### Mouse Controls
 * **Left Click:** Select planets or satellites.
 * **Right Click + Drag:** Rotate / Orbit camera around selected targets.
@@ -49,27 +51,16 @@ The system overlay allows you to:
 ## Technologies Used
 
 * **HTML5**
-* **CSS3** (Custom Sci-Fi styles, backdrop filters, dot grid background)
+* **CSS3** (Custom background styles, backdrop filters, dot grid background)
 * **JavaScript** (ES6 Modules)
 * **Three.js** (WebGL 3D Rendering Engine)
 
 ---
 
-## Project Structure
+## AI Usage
 
-```text
-GeoNet-3D/
-├── index.html
-├── main-style.css
-├── app.js
-├── scene.js
-├── planets.js
-├── satellites.js
-├── orbits.js
-├── camera.js
-├── astronomy.js
-├── navigation.js
-├── ui.js
-├── compass.js
-├── lighting.js
-└── textures/
+I used AI as a coding assistant for this project because Three.js and WebGL were beyond my current JavaScript knowledge:
+
+* **JavaScript & Three.js:** Generated and refined code for scene setup, ES6 modules, and camera logic.
+* **Math & Physics:** Calculated orbital movements for celestial bodies and real-time UTC alignment.
+* **Learning & Debugging:** Helped me understand advanced concepts step-by-step and fix rendering bugs.
