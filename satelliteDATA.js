@@ -1,4 +1,4 @@
- //this part takes care of getting the actual data and positioning them 
+ //this part takes care of getting the actual data and positioning them *reanemd becouse of case sentive name mismatch*
 
  export const SATELLITES = [
 
