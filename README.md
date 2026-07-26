@@ -1,141 +1,75 @@
 # GeoNet 3D
 
-GeoNet 3D is an interactive 3D visualization of the Solar System built with **Three.js**. The project was created as a way to explore modern web-based 3D graphics while presenting planets, moons, artificial satellites, and astronomical simulations in an intuitive environment.
+GeoNet 3D is an interactive 3D visualization of the Solar System built with **Three.js**. The project was created as an immersive way to explore modern web-based 3D graphics while presenting planets, moons, artificial satellites, and astronomical simulations in an intuitive, space-themed environment.
 
 ## Live Demo
 
-**Website:**
-https://m15dev.github.io/GeoNet-3D/
+🌐 **Website:** [https://m15dev.github.io/GeoNet-3D/](https://m15dev.github.io/GeoNet-3D/)
 
 ---
 
 ## Features
 
-* Interactive 3D Solar System
-* Planetary orbital motion
-* Earth's Moon with independent orbit
-* Artificial satellites around Earth
-* Real Speed mode based on the current UTC date and time
-* Planet alignment animation
-* Planet labels and information
-* Free camera controls
-* Responsive interface
+* **Interactive Welcome Screen (Intro):** A dedicated, standalone 3D Earth globe preview rendered alongside a styled control guide before launching the full simulation.
+* **Interactive 3D Solar System:** Explore celestial bodies rendered with real-time lighting and texture mapping.
+* **Planetary Orbital Motion:** Dynamic orbital calculation for planets and Earth's Moon with independent orbits.
+* **Artificial Satellites:** Track real-time satellite models orbiting Earth.
+* **Real Speed Mode:** Synchronize astronomical positions based on the current UTC date and time.
+* **3D Compass & Orientation:** Custom scissor-rendered 3D orientation compass overlaid on screen.
+* **Planet Information & Navigation:** Dynamic panels providing physical and orbital parameters for selected celestial bodies.
+* **Free & Locked Camera Controls:** Smooth camera transitions, tracking locks, and manual navigation.
+* **Sci-Fi UI Experience:** Semi-transparent futuristic control panels with custom toggle options.
 
 ---
 
 ## Controls
 
-### Mouse
+### Mouse Controls
+* **Left Click:** Select planets or satellites.
+* **Right Click + Drag:** Rotate / Orbit camera around selected targets.
+* **Scroll Wheel:** Zoom camera in / out.
 
-* **Left Click + Drag** → Rotate the camera
-* **Mouse Wheel** → Zoom in/out
-* **Right Click + Drag** → Move (Pan) the camera
+### Keyboard Controls
+* **W / A / S / D:** Free camera movement through 3D space.
 
-### Interface
+---
 
-The interface allows you to:
+## System UI & Settings
 
-* Toggle **Real Speed** mode
-* Align all planets before synchronizing them with their calculated positions
-* Enable or disable Earth's rotation
-* Select planets
-* Display information panels
-* Control simulation settings
+The system overlay allows you to:
+* Toggle **Real Speed** vs. accelerated simulation speed.
+* Toggle visibility for **Stars**, **Orbits**, **Artificial Satellites**, and the **3D Compass**.
+* Lock camera tracking to specific planets.
+* Cycle through planets using previous/next selectors.
+* Inspect real-time 3D camera coordinates $(X, Y, Z)$.
+* Hide/Show UI completely for clean views.
 
 ---
 
 ## Technologies Used
 
-* HTML5
-* CSS3
-* JavaScript (ES6 Modules)
-* Three.js
+* **HTML5**
+* **CSS3** (Custom Sci-Fi styles, backdrop filters, dot grid background)
+* **JavaScript** (ES6 Modules)
+* **Three.js** (WebGL 3D Rendering Engine)
 
 ---
 
 ## Project Structure
 
 ```text
-index.html
-css/
-js/
-assets/
-textures/
-```
-
----
-
-## About the Simulation
-
-The project is **not intended to be a scientific simulator**.
-
-Instead, it provides an educational and visually appealing representation of the Solar System.
-
-The planetary orbits are simplified by assuming:
-
-* Circular orbits
-* Constant orbital velocity
-* Fixed orbital planes
-
-The Real Speed mode synchronizes orbital positions using the current UTC date while keeping these simplifications.
-
----
-
-## Artificial Satellites
-
-The project currently includes several well-known spacecraft such as:
-
-* International Space Station (ISS)
-* Hubble Space Telescope
-* James Webb Space Telescope (JWST)
-* Sentinel-2A
-* Landsat 9
-
-These satellites are represented using simplified orbital models suitable for visualization.
-
----
-
-## AI Assistance
-
-Artificial Intelligence was used extensively during the development of this project.
-
-At the time this project was developed, I had already learned HTML and CSS, but my JavaScript knowledge was still limited because our classes had gone on vacation before we reached that part of the course.
-
-Since Three.js is a considerably more advanced library, I decided to use AI as a development assistant to accelerate learning and implementation.
-
-AI was mainly used for:
-
-* Explaining JavaScript concepts
-* Understanding Three.js APIs
-* Generating initial code structures
-* Debugging errors
-* Suggesting mathematical approaches for orbital motion
-* Refactoring code
-* Improving project organization
-
-All architectural decisions, feature selection, testing, debugging, and final integration were carried out by me. AI served as a programming assistant rather than an automatic project generator.
-
----
-
-## Future Improvements
-
-* More realistic orbital mechanics
-* Better lighting and shadows
-* Higher-quality planet textures
-* More satellites
-* Comets
-* Spacecraft missions
-* Improved UI/UX
-* Performance optimizations
-
----
-
-## Author
-
-Developed by **M15DEV**
-
-GitHub:
-https://github.com/M15DEV
-
-Project:
-https://m15dev.github.io/GeoNet-3D/
+GeoNet-3D/
+├── index.html
+├── main-style.css
+├── app.js
+├── scene.js
+├── planets.js
+├── satellites.js
+├── orbits.js
+├── camera.js
+├── astronomy.js
+├── navigation.js
+├── ui.js
+├── compass.js
+├── lighting.js
+└── textures/

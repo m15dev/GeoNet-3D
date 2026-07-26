@@ -7,10 +7,67 @@
     <link rel="stylesheet" href="main-style.css">
 </head>
 <body> 
+    <div class="intro-card" id="welcome-card">
+        
+        <!-- LADO ESQUERDO: Canvas exclusivo para a Terra da Intro -->
+        <div id="intro-globe-container"></div>
+
+        <!-- LADO DIREITO: Painel de Informações -->
+        <div class="card-body" id="card-body">
+            <h2>3D Orbital Simulator</h2>
+            <p>Welcome! Explore the Earth and real-time satellites in orbit.</p>
+            
+            <div class="controls-guide">
+                <!-- Mouse: Esquerdo vs Direito -->
+                <div class="control-row">
+                    <div class="mouse-icon-container">
+                        <div class="mouse-body">
+                            <div class="mouse-divider"></div>
+                            <div class="mouse-click-left active-left"></div>
+                            <div class="mouse-click-right"></div>
+                        </div>
+                    </div>
+                    <div class="control-text">
+                        Click the <span class="cool-blue">left</span> mouse button to select the planet/satellite.
+                    </div>
+                </div>
+
+                <div class="control-row">
+                    <div class="mouse-icon-container">
+                        <div class="mouse-body">
+                            <div class="mouse-divider"></div>
+                            <div class="mouse-click-left"></div>
+                            <div class="mouse-click-right active-right"></div>
+                        </div>
+                    </div>
+                    <div class="control-text">
+                        Press and hold the <span class="cool-blue">right</span> mouse button to drag camera around.
+                    </div>
+                </div>
+
+                <!-- Teclado: WASD -->
+                <div class="control-row">
+                    <div class="wasd-keys">
+                        <span class="key top">W</span>
+                        <div class="wasd-row">
+                            <span class="key">A</span>
+                            <span class="key">S</span>
+                            <span class="key">D</span>
+                        </div>
+                    </div>
+                    <div class="control-text">
+                        Use <span class="cool-blue">WASD</span> for free camera movement.
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="closeCard()" class="btn-start">Start Exploring</button>
+        </div>
+    </div>
+
+    <div id="canvas-container" style="display: none;"></div>
     
-    <div id="canvas-container"></div>
-    
-    <div id="ui-panel">
+    <div id="ui-panel" style="display: none;">
         <h3>System Controls</h3>
         <hr>
         <div class="control-group">
@@ -62,7 +119,7 @@
     </div>
 
 
-    <div id="planetInfo">
+    <div id="planetInfo" style="display: none;">
         <h2 id="info-title">Earth</h2>
         <hr>
         <div class="infoRow">
