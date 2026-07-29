@@ -25,7 +25,7 @@ earth.castShadow = true;
 earth.receiveShadow = true; 
 scene.add(earth);
 
-// Moon (Lua)
+// Moon é Lua
 export const moon = new THREE.Mesh(
     new THREE.SphereGeometry(0.8, 32, 32), 
     new THREE.MeshStandardMaterial({ map: moonTexture, roughness: 0.9 })
@@ -35,7 +35,7 @@ moon.name = "lua";
 moon.receiveShadow = true;   
 scene.add(moon);
 
-// Mercury (Mercúrio)
+// Mercury is Mercúrio
 export const mercury = new THREE.Mesh(
     new THREE.SphereGeometry(1.2, 32, 32),
     new THREE.MeshStandardMaterial({ color: 0xaaaaaa, roughness: 0.9 })
@@ -45,7 +45,7 @@ mercury.castShadow = true;
 mercury.receiveShadow = true;
 scene.add(mercury);
 
-// Venus (Vênus)
+// Venus is Vênus
 export const venus = new THREE.Mesh(
     new THREE.SphereGeometry(2.8, 64, 64),
     new THREE.MeshStandardMaterial({ color: 0xeeddaa, roughness: 0.7 })
@@ -55,7 +55,7 @@ venus.castShadow = true;
 venus.receiveShadow = true;
 scene.add(venus);
 
-// Mars (Marte)
+// Mars is Marte
 export const mars = new THREE.Mesh(
     new THREE.SphereGeometry(1.5, 32, 32),
     new THREE.MeshStandardMaterial({ color: 0xcc4422, roughness: 0.8 })
@@ -65,7 +65,7 @@ mars.castShadow = true;
 mars.receiveShadow = true;
 scene.add(mars);
 
-// Jupiter (Júpiter)
+// Jupiter it's Júpiter
 export const jupiter = new THREE.Mesh(
     new THREE.SphereGeometry(6, 64, 64),
     new THREE.MeshStandardMaterial({ color: 0xd9c0a3, roughness: 0.5 })
@@ -75,7 +75,7 @@ jupiter.castShadow = true;
 jupiter.receiveShadow = true;
 scene.add(jupiter);
 
-// Saturn (Saturno) & Rings
+// Saturn and the rings
 export const saturnGroup = new THREE.Group();
 saturnGroup.name = "saturno";
 
@@ -99,7 +99,7 @@ saturnRing.receiveShadow = true;
 saturnGroup.add(saturnRing);
 scene.add(saturnGroup);
 
-// Uranus (Urano) & Rings
+// Uranus urano n ring
 export const uranusGroup = new THREE.Group();
 uranusGroup.name = "urano";
 
@@ -122,7 +122,7 @@ uranusRing.rotation.x = Math.PI / 2;
 uranusGroup.add(uranusRing);
 scene.add(uranusGroup);
 
-// Neptune (Netuno)
+// Neptune é neturno
 export const neptune = new THREE.Mesh(
     new THREE.SphereGeometry(3.4, 64, 64),
     new THREE.MeshStandardMaterial({ color: 0x4169e1, roughness: 0.5 })

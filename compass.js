@@ -15,7 +15,7 @@ export function setShowCompass(value) {
     showCompass = value;
 }
 
-// Render loop step managing dedicated scissor canvas space
+// Render loop for the compass
 export function renderCompass() {
     if (showCompass) {
         compassCamera.quaternion.copy(camera.quaternion);

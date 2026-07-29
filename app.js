@@ -21,13 +21,13 @@ import { bindUIControls, updateCoordinateDisplay, setupHideUI } from './ui.js';
 import { renderCompass } from './compass.js';
 import { initLighting } from './lighting.js';
 
-// --- ESTADOS DO SISTEMA ---
+// Makes the run state to animate the planets alignmet
 let isMainAppRunning = false;
 let introAnimationId = null;
 
-// --- STARFIELD BACKGROUND GENERATOR ---
+// This thing create the stars
 const starsGeometry = new THREE.BufferGeometry();
-const starsCount = 3500; 
+const starsCount = 4000; 
 const starPositions = new Float32Array(starsCount * 3);
 
 for (let i = 0; i < starsCount; i++) {
@@ -46,7 +46,7 @@ const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.2 });
 const localStarField = new THREE.Points(starsGeometry, starsMaterial);
 scene.add(localStarField);
 
-// --- 1. GLOBO DA INTRODUÇÃO ---
+// Planeta terra da intro
 function initIntroGlobe() {
     const container = document.getElementById('intro-globe-container');
     if (!container) return;
@@ -99,7 +99,7 @@ function initIntroGlobe() {
 // Inicia o globo imediatamente
 initIntroGlobe();
 
-// --- 2. MAIN ANIMATION LOOP (SÓ RODA APÓS O CLIQUE) ---
+// Isso aqui e do parte que faz a animação dos planetas
 function animateMain() {
     if (!isMainAppRunning) return;
 
@@ -116,12 +116,12 @@ function animateMain() {
     updateCoordinateDisplay();
 }
 
-// --- 3. AÇÃO DO BOTÃO START EXPLORING ---
+// Botão do start exploring, inicia tudo
 function closeCard() {
     if (isMainAppRunning) return;
     isMainAppRunning = true;
 
-    // Cancela o loop do globo da intro
+    // Para a animaçõa da terra do inicio
     if (introAnimationId) {
         cancelAnimationFrame(introAnimationId);
     }
@@ -130,7 +130,7 @@ function closeCard() {
     const card = document.getElementById('welcome-card');
     if (card) card.style.display = 'none';
 
-    // Exibe a Aplicação Principal
+    // Exibe a o sistema solar
     const canvasContainer = document.getElementById('canvas-container');
     const uiPanel = document.getElementById('ui-panel');
     const planetInfo = document.getElementById('planetInfo');
@@ -139,21 +139,19 @@ function closeCard() {
     if (uiPanel) uiPanel.style.display = 'block';
     if (planetInfo) planetInfo.style.display = 'block';
 
-    // Inicializa os sistemas pesados APENAS AGORA com a tela visível
-    setupHideUI();
-    initLighting();
-    initAllOrbits();
-    initAllSatellites();
+    // Inicializa todos as partes do sistema
+    setupHideUI(); initLighting();
+    initAllOrbits(); initAllSatellites();
     bindUIControls(localStarField);
     initNavigationUI();
     setupCameraControl(earth, renderer.domElement);
 
-    // Ajusta Câmera e Renderer ao tamanho real da janela
+    // Ajusta Câmera e tamanho para renderizar
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 
-    // Inicia o Loop Principal do App
+    // chama função principal do loop do app
     animateMain();
 
     requestAnimationFrame(() => {

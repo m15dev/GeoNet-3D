@@ -29,7 +29,7 @@ export function createOrbit(radius, color = 0xffffff) {
     return orbit;
 }
 
-// Retorna todas as órbitas para o UI controlar
+// Retorna todas as órbitas para o UI controler
 export function getOrbitMeshes() {
     return orbitMeshes;
 }

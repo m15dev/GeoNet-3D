@@ -23,7 +23,7 @@ export let neptuneOrbitAngle = Math.PI * 1.8;
 // Epoch J2000
 const EPOCH = new Date("2000-01-01T12:00:00Z");
 
-// Período orbital (dias)
+// Período orbital em dias
 const orbitalPeriods = {
     mercurio: 87.969,
     venus: 224.701,
@@ -81,36 +81,31 @@ function normalizeAngle(angle) {
 
 }
 
-// Define the astronomical bodies and alignment properties
+// Define the size and proprieties
 export const bodies = [
     {
-        mesh: moon,
-        radius: 12,
+        mesh: moon, radius: 12,
         center: earth,
         get angle() { return moonOrbitAngle; },
         set angle(v) { moonOrbitAngle = v; }
     },
     {
-        mesh: mercury,
-        radius: 18,
+        mesh: mercury, radius: 18,
         get angle() { return mercuryOrbitAngle; },
         set angle(v) { mercuryOrbitAngle = v; }
     },
     {
-        mesh: venus,
-        radius: 26,
+        mesh: venus, radius: 26,
         get angle() { return venusOrbitAngle; },
         set angle(v) { venusOrbitAngle = v; }
     },
     {
-        mesh: earth,
-        radius: 38,
+        mesh: earth, radius: 38,
         get angle() { return earthOrbitAngle; },
         set angle(v) { earthOrbitAngle = v; }
     },
     {
-        mesh: mars,
-        radius: 50,
+        mesh: mars, radius: 50,
         get angle() { return marsOrbitAngle; },
         set angle(v) { marsOrbitAngle = v; }
     },
@@ -368,7 +363,7 @@ export function updateAstronomy() {
             }
         }
 
-        // Moon Translation & Tidal Locking
+        // Moon Translation and earth rotation
         moonOrbitAngle += 0.005 * timeScale; 
         moon.position.set(
             earth.position.x + Math.sin(moonOrbitAngle) * 12, 

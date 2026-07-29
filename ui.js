@@ -6,9 +6,10 @@ import { formatCoordinate } from './utils.js';
 import { getSatelliteMeshes } from './satellites.js';
 import { getOrbitMeshes } from './orbits.js';
 
-// Elements bound to the starfield configuration
+// Configuração pras estrela
 export function bindUIControls(starFieldMesh) {
-    // 1. Estrelas
+    //0. botão do Hide UI  
+    // 1. botão Estrelas
     const toggleStars = document.getElementById('toggle-stars');
     if (toggleStars && starFieldMesh) {
         toggleStars.addEventListener('change', (e) => {
@@ -16,7 +17,7 @@ export function bindUIControls(starFieldMesh) {
         });
     }
 
-    // 2. Órbitas
+    // 2. botão das Órbitas
     const toggleOrbits = document.getElementById('toggle-orbits');
     if (toggleOrbits) {
         toggleOrbits.addEventListener('change', (e) => {
@@ -28,7 +29,7 @@ export function bindUIControls(starFieldMesh) {
         });
     }
 
-    // 3. Satélites Artificiais
+    // 3. botão Satélites Artificiais
     const toggleSatellites = document.getElementById('toggle-ArtficialSatelites');
     if (toggleSatellites) {
         toggleSatellites.addEventListener('change', (e) => {
@@ -40,7 +41,7 @@ export function bindUIControls(starFieldMesh) {
         });
     }
 
-    // 4. Trava de Câmera
+    // 4. botão Trava de Câmera
     const toggleLock = document.getElementById('toggle-lock');
     if (toggleLock) {
         toggleLock.addEventListener('change', (e) => {
@@ -48,7 +49,7 @@ export function bindUIControls(starFieldMesh) {
         });
     }
 
-    // 5. Bússola 3D
+    // 5. botão Bússola 3D
     const toggleCompass = document.getElementById('toggle-compass');
     if (toggleCompass) {
         toggleCompass.addEventListener('change', (e) => {
@@ -56,7 +57,7 @@ export function bindUIControls(starFieldMesh) {
         });
     }
 
-    // 6. Velocidade Real
+    // 6. botão Velocidade Real
     const toggleSpeed = document.getElementById('toggle-speed');
     if (toggleSpeed) {
         toggleSpeed.addEventListener('change', (e) => {
@@ -95,16 +96,13 @@ export function setupHideUI() {
     btnShowUI.innerText = 'Show UI';
 
     Object.assign(btnShowUI.style, {
-        display: 'none', 
-        position: 'fixed',
-        top: '20px', 
-        left: '20px', // No canto esquerdo conforme solicitado
+        display: 'none', position: 'fixed',
+        top: '20px', left: '20px', // No canto esquerdo como defe ficar
         zIndex: '9999', 
         background: 'rgba(10, 10, 25, 0.95)',
         color: '#00ffcc',
         border: '1px solid #3a3a5c',
-        padding: '10px 15px',
-        borderRadius: '8px',
+        padding: '10px 15px', borderRadius: '8px',
         cursor: 'pointer',
         fontFamily: 'sans-serif',
         boxShadow: '0 4px 10px rgba(0,0,0,0.5)'

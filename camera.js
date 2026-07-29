@@ -136,7 +136,7 @@ export function updateCameraMovement() {
 // Global hook for continuous inputs
 window.updateCameraMovement = updateCameraMovement;
 
-// Break camera tracking on intentional user movements
+// Break camera track when key pressed
 window.addEventListener('keydown', (e) => {
     const k = e.key.toLowerCase();
     if (['w', 'a', 's', 'd', 'q', 'e', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k)) {

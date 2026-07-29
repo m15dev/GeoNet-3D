@@ -4,15 +4,13 @@ import { SATELLITES } from "./satelliteData.js";
 
 window.meusSatellitesGlobais = window.meusSatellitesGlobais || [];
 
-// Configurando o GLTFLoader junto com o DRACOLoader para ler os arquivos compactados da NASA
+// Configurando o GLTFLoader junto e DRACOLoader pra descompactar o modeo 3d
 const loader = new THREE.GLTFLoader();
 const dracoLoader = new THREE.DRACOLoader();
 dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
 loader.setDRACOLoader(dracoLoader);
 
-/**
- * Creates and spawns a 3D model simulation representing a real satellite module
- */
+/*Creates a 3D model for the satellite module */
 export function createSatellite(data) {
     const {
         name,
@@ -56,7 +54,6 @@ export function createSatellite(data) {
         (gltf) => {
             const model = gltf.scene;
 
-            // 1. AJUSTE DE TAMANHO (Scale): 
             // Aumente ou diminua os números (X, Y, Z) para cada satélite
             if (lowerName.includes("iss") || lowerName.includes("estacao")) {
                 model.scale.set(0.02, 0.02, 0.02); 
@@ -87,8 +84,7 @@ export function createSatellite(data) {
     });
 }
 
-/**
- * Performs vector translations. Accepts timeScale to adjust simulation speed dynamically.
+/** Does some cool math that i didn't do to put on the corect position
  */
 export function updateSatellites(timeScale = 1.0) {
     if (!window.meusSatellitesGlobais) return;
